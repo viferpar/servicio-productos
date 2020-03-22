@@ -15,9 +15,6 @@ import es.viferpar.springboot.apps.productos.service.ProductoService;
 @RestController
 public class ProductosController {
 
-    // @Autowired
-    // private Environment enviroment;
-
     @Value("${server.port}")
     private Integer port;
 
@@ -27,16 +24,20 @@ public class ProductosController {
     @GetMapping("/listar")
     public List<Producto> listar() {
         return productoService.findAll().stream().map(p -> {
-            // p.setPort(Integer.parseInt(enviroment.getProperty("server.port")));
             p.setPort(port);
             return p;
         }).collect(Collectors.toList());
     }
 
-    @GetMapping("detalle/{id}")
-    public Producto detalle(@PathVariable Long id) {
+    @GetMapping("detalle/{id}/fallo/{fallo}")
+    public Producto detalle(@PathVariable Long id, @PathVariable boolean fallo) throws Exception {
+
+        if (fallo) {
+            throw new Exception("Excepcion producida para probar las capacidades de Hystrix");
+            // Thread.sleep(2000L);
+        }
+
         Producto producto = productoService.findById(id);
-        // producto.setPort(Integer.parseInt(enviroment.getProperty("server.port")));
         producto.setPort(port);
         return producto;
     }
